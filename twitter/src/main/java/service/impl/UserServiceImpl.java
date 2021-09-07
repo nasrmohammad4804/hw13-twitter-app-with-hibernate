@@ -184,8 +184,7 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long, UserRepositoryI
     public void showUserTwits(User user, User anotherUser) {
 
 
-        List<Twit> twits = entityManager.createNativeQuery("SELECT t.* FROM twit as t where t.twit_comment is null" +
-                " and t.user_id=:id and t.isDeleted=false ", Twit.class)
+        List<Twit> twits = entityManager.createNamedQuery("allTwitOfUser", Twit.class)
                 .setParameter("id", user.getId())
                 .getResultList();
 
@@ -266,7 +265,8 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long, UserRepositoryI
         System.out.println("1.show comment of  twit");
         System.out.println("2.like or dislike twit");
         System.out.println("3.add comment to this twit");
-        System.out.println("4. back ");
+        System.out.println("4.update comment");
+        System.out.println("5. back ");
         switch (ApplicationContext.getApplicationContext().getScannerForInteger().nextInt()) {
 
             case 1 -> {
@@ -287,7 +287,11 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long, UserRepositoryI
                 operationOnAnotherTwit(user, anotherUser, twit);
             }
 
-            case 4 -> System.out.println("back to home of " + anotherUser.getUserName());
+            case 4 ->{
+                twitService.updateComment(anotherUser,twit);
+                operationOnAnotherTwit(user, anotherUser, twit);
+            }
+            case 5 -> System.out.println("back to home of " + anotherUser.getUserName());
 
         }
     }
