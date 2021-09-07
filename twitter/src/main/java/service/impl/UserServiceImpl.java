@@ -184,9 +184,7 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long, UserRepositoryI
     public void showUserTwits(User user, User anotherUser) {
 
 
-        List<Twit> twits = entityManager.createNamedQuery("allTwitOfUser", Twit.class)
-                .setParameter("id", user.getId())
-                .getResultList();
+        List<Twit> twits = twitService.findAllTwitOfUser(user);
 
         twits.forEach(twit -> {
 
@@ -287,8 +285,8 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long, UserRepositoryI
                 operationOnAnotherTwit(user, anotherUser, twit);
             }
 
-            case 4 ->{
-                twitService.updateComment(anotherUser,twit);
+            case 4 -> {
+                twitService.updateComment(anotherUser, twit);
                 operationOnAnotherTwit(user, anotherUser, twit);
             }
             case 5 -> System.out.println("back to home of " + anotherUser.getUserName());

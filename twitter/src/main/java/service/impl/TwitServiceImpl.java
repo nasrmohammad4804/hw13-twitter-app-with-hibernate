@@ -111,6 +111,11 @@ public class TwitServiceImpl extends BaseServiceImpl<Twit, Long, TwitRepositoryI
 
     }
 
+    @Override
+    public List<Twit> findAllTwitOfUser(User user) {
+        return  repository.findAllTwitOfUser(user);
+    }
+
     private LikeState chooseLikeState(TwitLike twitLike) {
 
         System.out.println("your state is : " + twitLike.getState());
