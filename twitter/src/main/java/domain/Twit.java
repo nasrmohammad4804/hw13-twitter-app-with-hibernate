@@ -7,9 +7,6 @@ import javax.persistence.*;
 import java.util.*;
 
 @Entity
-
-@NamedNativeQuery(name = "allTwitOfUser",query = "SELECT t.* FROM twit as t where t.twit_comment is null" +
-        "  and t.user_id=:id and t.isDeleted=false ")
 @NamedNativeQuery(name = "countOfAllTwitsOfUser",query = "SELECT count(*) FROM twit as t where t.twit_comment is null" +
         " and t.user_id=:myId and t.isDeleted=false")
 
