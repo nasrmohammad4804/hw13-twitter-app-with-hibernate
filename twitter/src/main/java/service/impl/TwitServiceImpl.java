@@ -9,6 +9,7 @@ import repsostory.impl.TwitRepositoryImpl;
 import service.TwitService;
 import util.ApplicationContext;
 
+import java.math.BigInteger;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
@@ -77,7 +78,7 @@ public class TwitServiceImpl extends BaseServiceImpl<Twit, Long, TwitRepositoryI
         twitLikeAtomicReference.get().setState(chooseLikeState(twitLikeAtomicReference.get()));
 
 
-        System.out.println("your state changed to  " + twitLikeAtomicReference.get().getState());
+        System.out.println("your state changed to  " + twitLikeAtomicReference.get().getState()+"\n");
         update(twit);
 
         entityManager.refresh(twit);
@@ -113,7 +114,12 @@ public class TwitServiceImpl extends BaseServiceImpl<Twit, Long, TwitRepositoryI
 
     @Override
     public List<Twit> findAllTwitOfUser(User user) {
-        return  repository.findAllTwitOfUser(user);
+        return repository.findAllTwitOfUser(user);
+    }
+
+    @Override
+    public BigInteger countOfTwitsOfUser(Long userId) {
+        return repository.countOfTwitsOfUser(userId);
     }
 
     private LikeState chooseLikeState(TwitLike twitLike) {
@@ -143,18 +149,6 @@ public class TwitServiceImpl extends BaseServiceImpl<Twit, Long, TwitRepositoryI
 
         } catch (Exception e) {
             return optional;
-        }
-
-    }
-
-    public long numberOfTwitsOfUser(User user) {
-
-        try {
-            return entityManager.createNamedQuery("countOfAllTwitsOfUser", Long.class)
-                    .setParameter("myId", user.getId()).getSingleResult();
-        } catch (Exception e) {
-
-            return 0;
         }
 
     }

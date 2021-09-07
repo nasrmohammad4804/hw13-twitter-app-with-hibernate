@@ -245,14 +245,20 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long, UserRepositoryI
             System.out.println("nice to meet you");
             return;
         }
+        List<Twit> twitList=twitService.findAllTwitOfUser(user);
+        if(twitList.isEmpty()){
+            System.out.println("user with userName :"+user.getUserName()+" or dont have any twit or deleted\n");
+            return;
+        }
 
         System.out.println("enter twit id");
         Long id = ApplicationContext.getApplicationContext().getScannerForInteger().nextLong();
 
-        Optional<Twit> optionalTwit = twitService.findById(id);
+        Optional<Twit> optionalTwit =  twitList.stream().filter(x -> x.getId().equals(id)).findAny();
+
 
         if (optionalTwit.isEmpty()) {
-            System.out.println("this id for twit not exists");
+            System.out.println("this id for twit not exists\n");
             return;
         }
         operationOnAnotherTwit(user, anotherUser, optionalTwit.get());

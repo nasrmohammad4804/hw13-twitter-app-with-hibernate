@@ -40,6 +40,7 @@ public class App {
             }
             case 3 -> {
                 userService.recovery();
+                System.out.println("account is recovery\n");
                 start();
             }
             case 4 -> {
@@ -95,7 +96,7 @@ public class App {
             }
             case 6 -> {
 
-                if (twitService.numberOfTwitsOfUser(user) == 0){
+                if (twitService.countOfTwitsOfUser(user.getId()).longValue()== 0){
                     System.out.println("dont find any exists twit !!!\n");
                     userPanel(user);
                 }
@@ -122,6 +123,7 @@ public class App {
 
             case 9 -> {
                 userService.delete(user);
+                System.out.println("account is deleted -_-\n");
                 start();
             }
         }
@@ -129,12 +131,12 @@ public class App {
 
     private Optional<Twit> findTwit(User user) {
 
-        if (twitService.numberOfTwitsOfUser(user) == 0)
+        if (twitService.countOfTwitsOfUser(user.getId()).longValue()== 0)
             return Optional.empty();
 
-        System.out.println("enter witch one twit from all twits");
         userService.showUserTwits(user, user);
 
+        System.out.println("enter witch one twit from all twits");
         Long id = ApplicationContext.getApplicationContext().getScannerForInteger().nextLong();
         return twitService.findById(id);
     }
@@ -146,7 +148,7 @@ public class App {
         System.out.println("2.like or dislike");
         System.out.println("3.add comments");
         System.out.println("4.update comment");
-        System.out.println("6.delete twit");
+        System.out.println("5.delete twit");
         System.out.println("6.go back ");
 
         switch (ApplicationContext.getApplicationContext().getScannerForInteger().nextInt()) {

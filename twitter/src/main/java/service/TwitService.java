@@ -4,6 +4,7 @@ import base.service.BaseService;
 import domain.Twit;
 import domain.User;
 
+import java.math.BigInteger;
 import java.util.List;
 
 public interface TwitService extends BaseService<Twit,Long> {
@@ -17,5 +18,7 @@ public interface TwitService extends BaseService<Twit,Long> {
     void updateComment(User user, Twit twit);
 
     List<Twit> findAllTwitOfUser(User user);
+
+    BigInteger countOfTwitsOfUser(Long userId);
 
 }
