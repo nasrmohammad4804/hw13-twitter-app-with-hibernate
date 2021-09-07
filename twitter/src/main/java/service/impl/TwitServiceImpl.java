@@ -9,8 +9,10 @@ import repsostory.impl.TwitRepositoryImpl;
 import service.TwitService;
 import util.ApplicationContext;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.stream.Collectors;
 
 public class TwitServiceImpl extends BaseServiceImpl<Twit, Long, TwitRepositoryImpl>
         implements TwitService {
@@ -81,6 +83,34 @@ public class TwitServiceImpl extends BaseServiceImpl<Twit, Long, TwitRepositoryI
         entityManager.refresh(twit);
     }
 
+    @Override
+    public void updateComment(User user, Twit twit) {
+
+        List<Twit> comments = twit.getComments().stream().filter(x -> x.getUser().equals(user))
+                .collect(Collectors.toList());
+
+        if (comments.isEmpty()) {
+            System.out.println("you are dont confirm any comment for this twit ");
+            return;
+        }
+
+        comments.forEach(Twit::print);
+        System.out.println("enter one comments witch you confirmed !!!");
+        Long id = ApplicationContext.getApplicationContext().getScannerForInteger().nextLong();
+
+        comments.stream().filter(x -> x.getId().equals(id)).forEach(x -> {
+            System.out.println("your already comment is:\n" + x.getContext());
+            System.out.println("enter new comment");
+            String newComment = ApplicationContext.getApplicationContext().getScannerForString().nextLine();
+            x.setContext(newComment);
+        });
+
+        entityManager.getTransaction().begin();
+
+        entityManager.getTransaction().commit();
+
+    }
+
     private LikeState chooseLikeState(TwitLike twitLike) {
 
         System.out.println("your state is : " + twitLike.getState());
@@ -108,6 +138,18 @@ public class TwitServiceImpl extends BaseServiceImpl<Twit, Long, TwitRepositoryI
 
         } catch (Exception e) {
             return optional;
+        }
+
+    }
+
+    public long numberOfTwitsOfUser(User user) {
+
+        try {
+            return entityManager.createNamedQuery("countOfAllTwitsOfUser", Long.class)
+                    .setParameter("myId", user.getId()).getSingleResult();
+        } catch (Exception e) {
+
+            return 0;
         }
 
     }

@@ -12,4 +12,6 @@ public interface TwitService extends BaseService<Twit,Long> {
 
     void setLikeStateOfTwit(User user,Twit twit);
 
+    void updateComment(User user, Twit twit);
+
 }
