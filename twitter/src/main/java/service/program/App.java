@@ -63,7 +63,6 @@ public class App {
         System.out.println("8.logout");
         System.out.println("9.delete account");
 
-
         switch (ApplicationContext.getApplicationContext().getScannerForInteger().nextInt()) {
 
             case 1 -> {
@@ -86,7 +85,7 @@ public class App {
                 optional.ifPresent(twit -> myTwitPanel(user, twit));
 
                 if (optional.isEmpty())
-                    System.out.println("dont any match twit with this id or twit deleted");
+                    System.out.println("dont find any exists twit !!!\n");
 
                 userPanel(user);
             }
@@ -95,7 +94,14 @@ public class App {
                 userPanel(user);
             }
             case 6 -> {
-                userService.showUserTwits(user,user);
+
+                if (twitService.numberOfTwitsOfUser(user) == 0){
+                    System.out.println("dont find any exists twit !!!\n");
+                    userPanel(user);
+                }
+
+                userService.showUserTwits(user, user);
+
                 userService.showSpecificTwit(user);
                 userPanel(user);
             }
@@ -123,9 +129,12 @@ public class App {
 
     private Optional<Twit> findTwit(User user) {
 
-        userService.showUserTwits(user, user);
+        if (twitService.numberOfTwitsOfUser(user) == 0)
+            return Optional.empty();
 
         System.out.println("enter witch one twit from all twits");
+        userService.showUserTwits(user, user);
+
         Long id = ApplicationContext.getApplicationContext().getScannerForInteger().nextLong();
         return twitService.findById(id);
     }
@@ -136,8 +145,9 @@ public class App {
         System.out.println("1.change context ");
         System.out.println("2.like or dislike");
         System.out.println("3.add comments");
-        System.out.println("4.delete twit");
-        System.out.println("5.go back ");
+        System.out.println("4.update comment");
+        System.out.println("6.delete twit");
+        System.out.println("6.go back ");
 
         switch (ApplicationContext.getApplicationContext().getScannerForInteger().nextInt()) {
 
@@ -157,12 +167,16 @@ public class App {
                 twitService.addComments(twit, user);
                 myTwitPanel(user, twit);
             }
-            case 4 ->{
+            case 4 -> {
+                twitService.updateComment(user, twit);
+                myTwitPanel(user, twit);
+            }
+            case 5 -> {
                 twitService.delete(twit);
                 userPanel(user);
             }
 
-            case 5 -> userPanel(user);
+            case 6 -> userPanel(user);
 
             default -> {
                 System.out.println("input not valid ... try again");
