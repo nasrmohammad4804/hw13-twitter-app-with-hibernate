@@ -55,10 +55,12 @@ public class TwitRepositoryImpl extends BaseRepositoryImpl<Twit, Long>
         Optional<Twit> optional = Optional.empty();
 
         try {
+            
+            Twit twit = (Twit) entityManager.createNativeQuery("select distinct t.* from Twit as t join twit as com where " +
+                    "                   t.id=:myId and t.isDeleted=false and " +
+                    "( com.isDeleted=false and com.id is not null or " +
+                    "    com.id is null )", Twit.class).setParameter("myId", id).getSingleResult();
 
-            Twit twit = entityManager.createQuery("select t from Twit as t join t.comments as com where " +
-                    " t.id=:myId and t.isDeleted=false and com.isDeleted=false ", Twit.class)
-                    .setParameter("myId", id).getSingleResult();
             optional = Optional.of(twit);
             return optional;
 
