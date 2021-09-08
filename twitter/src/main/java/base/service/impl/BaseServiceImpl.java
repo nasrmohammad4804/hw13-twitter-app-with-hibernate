@@ -9,8 +9,8 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.Optional;
 
-public abstract   class BaseServiceImpl<E extends BaseEntity<ID>, ID extends Serializable, R extends BaseRepositoryImpl<E, ID>>
-        implements BaseService<E, ID> {
+public abstract   class BaseServiceImpl<E extends BaseEntity<ID>, ID extends Serializable,
+        R extends BaseRepositoryImpl<E, ID>> implements BaseService<E, ID> {
 
     protected final R repository;
     protected final EntityManager entityManager;

@@ -148,8 +148,9 @@ public class App {
         System.out.println("2.like or dislike");
         System.out.println("3.add comments");
         System.out.println("4.update comment");
-        System.out.println("5.delete twit");
-        System.out.println("6.go back ");
+        System.out.println("5.delete comment");
+        System.out.println("6.delete twit");
+        System.out.println("7.go back ");
 
         switch (ApplicationContext.getApplicationContext().getScannerForInteger().nextInt()) {
 
@@ -174,11 +175,15 @@ public class App {
                 myTwitPanel(user, twit);
             }
             case 5 -> {
+                twitService.deleteComment(user,twit);
+                myTwitPanel(user,twit);
+            }
+            case 6 -> {
                 twitService.delete(twit);
                 userPanel(user);
             }
 
-            case 6 -> userPanel(user);
+            case 7 -> userPanel(user);
 
             default -> {
                 System.out.println("input not valid ... try again");

@@ -97,7 +97,7 @@ public class Twit extends BaseEntity<Long> {
         System.out.printf("%-80s%s\n" ,"|context of twit : ","|");
         System.out.printf("%-80s%s\n","|"+context,"|");
         System.out.println("-".repeat(80));
-        getComments().forEach(comment -> {
+        getComments().stream().filter(x -> x.getDeleted().equals(Boolean.FALSE)).forEach(comment -> {
             System.out.println("comment id :" + comment.getId() + "  " + " writed by :"
                     + comment.getUser().getUserName()
                     + "\n text of comment : \n" + comment.getContext());
