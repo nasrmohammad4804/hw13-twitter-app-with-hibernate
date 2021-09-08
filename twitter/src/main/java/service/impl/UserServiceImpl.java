@@ -66,7 +66,7 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long, UserRepositoryI
         User user = new User.UserBuilder(userName, password).getBirthDay(birthDay)
                 .getProfile(new Profile(name, family, nationalCode)).build();
 
-        save(user);
+        super.save(user);
         entityManager.refresh(user);
 
         return Optional.of(user);
@@ -130,14 +130,14 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long, UserRepositoryI
                 System.out.println("enter newName");
                 String name = ApplicationContext.getApplicationContext().getScannerForString().nextLine();
                 user.getProfile().setFirstName(name);
-                update(user);
+                super.update(user);
 
             }
             case 2 -> {
                 System.out.println("enter newLastName");
                 String family = ApplicationContext.getApplicationContext().getScannerForString().nextLine();
                 user.getProfile().setLastName(family);
-                update(user);
+                super.update(user);
             }
             case 3 -> {
                 System.out.println("enter old password ");
@@ -150,7 +150,7 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long, UserRepositoryI
                 System.out.println("enter newPassword");
                 String newPassword = ApplicationContext.getApplicationContext().getScannerForString().nextLine();
                 user.setPassword(newPassword);
-                update(user);
+                super.update(user);
             }
             default -> System.out.println("input not valid");
         }
@@ -178,7 +178,7 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long, UserRepositoryI
 
         User user = userOptional.get();
         user.setDeleted(false);
-        update(user);
+        super.update(user);
     }
 
     public void showUserTwits(User user, User anotherUser) {
@@ -188,7 +188,7 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long, UserRepositoryI
 
         twits.forEach(twit -> {
 
-            long commentNumber = twit.getComments().size();
+            long commentNumber = twit.getComments().stream().filter(x -> x.getDeleted().equals(Boolean.FALSE)).count();
 
             System.out.print("id : " + twit.getId() + "    comment number is : " + commentNumber + "    ");
             Optional<TwitLike> twitLikeOptional = twit.getTwitLikes().
@@ -245,16 +245,16 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long, UserRepositoryI
             System.out.println("nice to meet you");
             return;
         }
-        List<Twit> twitList=twitService.findAllTwitOfUser(user);
-        if(twitList.isEmpty()){
-            System.out.println("user with userName :"+user.getUserName()+" or dont have any twit or deleted\n");
+        List<Twit> twitList = twitService.findAllTwitOfUser(user);
+        if (twitList.isEmpty()) {
+            System.out.println("user with userName :" + user.getUserName() + " or dont have any twit or deleted\n");
             return;
         }
 
         System.out.println("enter twit id");
         Long id = ApplicationContext.getApplicationContext().getScannerForInteger().nextLong();
 
-        Optional<Twit> optionalTwit =  twitList.stream().filter(x -> x.getId().equals(id)).findAny();
+        Optional<Twit> optionalTwit = twitList.stream().filter(x -> x.getId().equals(id)).findAny();
 
 
         if (optionalTwit.isEmpty()) {
@@ -270,7 +270,8 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long, UserRepositoryI
         System.out.println("2.like or dislike twit");
         System.out.println("3.add comment to this twit");
         System.out.println("4.update comment");
-        System.out.println("5. back ");
+        System.out.println("5.delete comment");
+        System.out.println("6. back ");
         switch (ApplicationContext.getApplicationContext().getScannerForInteger().nextInt()) {
 
             case 1 -> {
@@ -295,7 +296,11 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long, UserRepositoryI
                 twitService.updateComment(anotherUser, twit);
                 operationOnAnotherTwit(user, anotherUser, twit);
             }
-            case 5 -> System.out.println("back to home of " + anotherUser.getUserName());
+            case 5 -> {
+                twitService.deleteComment(anotherUser, twit);
+                operationOnAnotherTwit(user, anotherUser, twit);
+            }
+            case 6 -> System.out.println("back to home of " + anotherUser.getUserName());
 
         }
     }

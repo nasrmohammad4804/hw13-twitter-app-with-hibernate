@@ -17,6 +17,8 @@ public interface TwitService extends BaseService<Twit,Long> {
 
     void updateComment(User user, Twit twit);
 
+    void deleteComment(User user,Twit twit);
+
     List<Twit> findAllTwitOfUser(User user);
 
     BigInteger countOfTwitsOfUser(Long userId);

@@ -48,7 +48,7 @@ public class TwitServiceImpl extends BaseServiceImpl<Twit, Long, TwitRepositoryI
         String comment = ApplicationContext.getApplicationContext().getScannerForString().nextLine();
 
         twit.getComments().add(new Twit(comment, user));
-        update(twit);
+        super.update(twit);
 
         entityManager.refresh(twit);
     }
@@ -78,8 +78,8 @@ public class TwitServiceImpl extends BaseServiceImpl<Twit, Long, TwitRepositoryI
         twitLikeAtomicReference.get().setState(chooseLikeState(twitLikeAtomicReference.get()));
 
 
-        System.out.println("your state changed to  " + twitLikeAtomicReference.get().getState()+"\n");
-        update(twit);
+        System.out.println("your state changed to  " + twitLikeAtomicReference.get().getState() + "\n");
+        super.update(twit);
 
         entityManager.refresh(twit);
     }
@@ -87,29 +87,51 @@ public class TwitServiceImpl extends BaseServiceImpl<Twit, Long, TwitRepositoryI
     @Override
     public void updateComment(User user, Twit twit) {
 
-        List<Twit> comments = twit.getComments().stream().filter(x -> x.getUser().equals(user))
-                .collect(Collectors.toList());
+        List<Twit> comments = getCommentOfUserForUpdate(user, twit);
 
-        if (comments.isEmpty()) {
-            System.out.println("you are dont confirm any comment for this twit ");
+        if (comments.isEmpty())
             return;
-        }
 
-        comments.forEach(Twit::print);
-        System.out.println("enter one comments witch you confirmed !!!");
-        Long id = ApplicationContext.getApplicationContext().getScannerForInteger().nextLong();
-
-        comments.stream().filter(x -> x.getId().equals(id)).forEach(x -> {
+        comments.forEach(x -> {
             System.out.println("your already comment is:\n" + x.getContext());
             System.out.println("enter new comment");
             String newComment = ApplicationContext.getApplicationContext().getScannerForString().nextLine();
             x.setContext(newComment);
         });
 
-        entityManager.getTransaction().begin();
+        super.update(twit);
+    }
 
-        entityManager.getTransaction().commit();
+    @Override
+    public void deleteComment(User user, Twit twit) {
 
+        List<Twit> comments = getCommentOfUserForUpdate(user, twit);
+
+        if (comments.isEmpty())
+            return;
+
+        comments.forEach(x -> {
+            x.setDeleted(true);
+            System.out.println("this comment successfully deleted ##");
+        });
+
+        super.update(twit);
+    }
+
+    private List<Twit> getCommentOfUserForUpdate(User user, Twit twit) {
+        List<Twit> comments = twit.getComments().stream().filter(x -> x.getUser().equals(user))
+                .collect(Collectors.toList());
+
+        if (comments.isEmpty()) {
+            System.out.println("you are dont confirm any comment for this twit ");
+            return List.of();
+        }
+
+        comments.forEach(Twit::print);
+        System.out.println("enter one comments witch you confirmed !!!");
+        Long id = ApplicationContext.getApplicationContext().getScannerForInteger().nextLong();
+
+        return comments.stream().filter(x -> x.getId().equals(id)).collect(Collectors.toList());
     }
 
     @Override
@@ -136,20 +158,6 @@ public class TwitServiceImpl extends BaseServiceImpl<Twit, Long, TwitRepositoryI
     @Override
     public Optional<Twit> findById(Long id) {
 
-        Optional<Twit> optional = Optional.empty();
-
-        try {
-
-            Twit twit = entityManager.createQuery("select t from Twit as t" +
-                    " where t.id=:myId and t.isDeleted=false", Twit.class)
-                    .setParameter("myId", id).getSingleResult();
-
-            optional = Optional.of(twit);
-            return optional;
-
-        } catch (Exception e) {
-            return optional;
-        }
-
+        return repository.findById(id);
     }
 }
